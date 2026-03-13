@@ -1,0 +1,99 @@
+package interswitch.academy.verve_guard.entities;
+
+import interswitch.academy.verve_guard.entities.audit.MutableAudit;
+import interswitch.academy.verve_guard.models.enums.TransactionChannel;
+import interswitch.academy.verve_guard.models.enums.TransactionStatus;
+import interswitch.academy.verve_guard.models.enums.TransactionType;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
+
+import java.math.BigDecimal;
+import java.util.Objects;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "transactions")
+public class Transaction extends MutableAudit {
+
+    @Id
+    @Column(nullable = false, updatable = false, length = 26)
+    private String id;
+
+    @Column(nullable = false, unique = true, length = 100)
+    private String reference;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "card_id")
+    private Card card;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "transfer_id")
+    private Transfer transfer;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transaction_type", nullable = false, length = 50)
+    private TransactionType transactionType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    private TransactionChannel channel;
+
+    @Column(nullable = false, precision = 19, scale = 4)
+    private BigDecimal amount;
+
+    @Column(nullable = false, precision = 19, scale = 4)
+    private BigDecimal fee;
+
+    @Column(nullable = false, length = 3)
+    private String currency;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transaction_status", nullable = false, length = 50)
+    private TransactionStatus transactionStatus;
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+
+        Class<?> oEffectiveClass = o instanceof HibernateProxy hibernateProxy
+                ? hibernateProxy.getHibernateLazyInitializer().getPersistentClass()
+                : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy hibernateProxy
+                ? hibernateProxy.getHibernateLazyInitializer().getPersistentClass()
+                : this.getClass();
+
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Transaction that = (Transaction) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy hibernateProxy
+                ? hibernateProxy.getHibernateLazyInitializer().getPersistentClass().hashCode()
+                : getClass().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id='" + id + '\'' +
+                ", reference='" + reference + '\'' +
+                ", transactionType=" + transactionType +
+                ", amount=" + amount +
+                ", currency='" + currency + '\'' +
+                ", transactionStatus=" + transactionStatus +
+                '}';
+    }
+}
+
