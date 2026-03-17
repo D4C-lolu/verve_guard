@@ -19,7 +19,7 @@ import java.util.Objects;
 public class TierConfig extends MutableAudit {
 
     @Id
-    @Column(nullable = false, updatable = false, length = 26)
+    @Column(nullable = false, updatable = false)
     private String id;
 
     @Enumerated(EnumType.STRING)
@@ -40,6 +40,10 @@ public class TierConfig extends MutableAudit {
 
     @Column(nullable = false)
     private Integer maxAccounts;
+
+    public TierConfig(String id) {
+        this.id = id;
+    }
 
     @Override
     public final boolean equals(Object o) {

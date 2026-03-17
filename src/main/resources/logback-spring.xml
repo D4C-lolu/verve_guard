@@ -3,9 +3,9 @@
 
     <!-- ANSI Color Codes -->
     <conversionRule conversionWord="clr"
-                    converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+                    class="org.springframework.boot.logging.logback.ColorConverter"/>
     <conversionRule conversionWord="wex"
-                    converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+                    class="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
 
     <!-- Color mapping per log level -->
     <property name="RESET"   value="%clr(){reset}"/>

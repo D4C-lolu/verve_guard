@@ -1,6 +1,7 @@
-package interswitch.academy.verve_guard.security;
+package interswitch.academy.verve_guard.services;
 
 import interswitch.academy.verve_guard.configuration.JwtProperties;
+import interswitch.academy.verve_guard.security.UserPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -57,6 +58,10 @@ public class JwtService {
 
     public String extractJti(String token) {
         return extractAllClaims(token).getId();
+    }
+
+    public Date extractIssuedAt(String token) {
+        return extractAllClaims(token).getIssuedAt();
     }
 
     public boolean isTokenExpired(String token) {

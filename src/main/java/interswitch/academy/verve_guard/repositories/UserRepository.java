@@ -1,6 +1,8 @@
 package interswitch.academy.verve_guard.repositories;
 
 import interswitch.academy.verve_guard.entities.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -16,4 +18,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     boolean existsByPhone(String phone);
 
     List<User> findAllByDeletedAtIsNull();
+
+    Page<User> findAllByDeletedAtIsNull(Pageable pageable);
 }

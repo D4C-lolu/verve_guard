@@ -3,7 +3,6 @@ package interswitch.academy.verve_guard.entities;
 import interswitch.academy.verve_guard.entities.audit.CreatedAudit;
 import jakarta.persistence.*;
 import lombok.*;
-
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.proxy.HibernateProxy;
@@ -22,7 +21,7 @@ import java.util.Objects;
 public class Role extends CreatedAudit {
 
     @Id
-    @Column(nullable = false, updatable = false, length = 26)
+    @Column(nullable = false, updatable = false)
     private String id;
 
     @Column(nullable = false, unique = true, length = 50)
@@ -35,6 +34,11 @@ public class Role extends CreatedAudit {
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
     private List<Permission> permissions;
+
+    public Role(String id) {
+        this.id = id;
+    }
+
 
     @Override
     public final boolean equals(Object o) {

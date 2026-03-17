@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import java.util.concurrent.TimeUnit;
 
 @Configuration
@@ -26,6 +27,13 @@ public class CacheConfig {
     public Cache<String, String> refreshTokenCache() {
         return Caffeine.newBuilder()
                 .expireAfterWrite(jwtProperties.getRefreshTokenExpiry(), TimeUnit.MILLISECONDS)
+                .build();
+    }
+
+    @Bean
+    public Cache<String, Long> userRevocationCache() {
+        return Caffeine.newBuilder()
+                .expireAfterWrite(jwtProperties.getRefreshTokenExpiry(), TimeUnit.SECONDS)
                 .build();
     }
 }

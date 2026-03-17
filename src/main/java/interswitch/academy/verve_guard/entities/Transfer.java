@@ -2,11 +2,11 @@ package interswitch.academy.verve_guard.entities;
 
 import interswitch.academy.verve_guard.entities.audit.MutableAudit;
 import interswitch.academy.verve_guard.models.enums.TransferStatus;
-import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.Objects;
 public class Transfer extends MutableAudit {
 
     @Id
-    @Column(nullable = false, updatable = false, length = 26)
+    @Column(nullable = false, updatable = false)
     private String id;
 
     @Column(nullable = false, unique = true, length = 100)
@@ -50,12 +50,16 @@ public class Transfer extends MutableAudit {
     @Column(columnDefinition = "text")
     private String description;
 
-    @Type(JsonBinaryType.class)
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> metadata;
 
     @OneToMany(mappedBy = "transfer", fetch = FetchType.LAZY)
     private List<Transaction> transactions;
+
+    public Transfer(String id) {
+        this.id = id;
+    }
 
     @Override
     public final boolean equals(Object o) {

@@ -1,7 +1,10 @@
-package interswitch.academy.verve_guard.security;
+package interswitch.academy.verve_guard.services;
 
 import interswitch.academy.verve_guard.exceptions.InvalidTokenException;
 import interswitch.academy.verve_guard.models.response.AuthResponse;
+import interswitch.academy.verve_guard.security.TokenStore;
+import interswitch.academy.verve_guard.security.UserDetailsServiceImpl;
+import interswitch.academy.verve_guard.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +38,7 @@ public class TokenService {
         tokenStore.revokeRefreshToken(userId, jti);
 
         // load user and issue new pair
-        UserPrincipal principal = (UserPrincipal) userDetailsService.loadUserByUsername(userId);
+        UserPrincipal principal = (UserPrincipal) userDetailsService.loadUserById(userId);
         return issueTokens(principal);
     }
 
@@ -48,6 +51,7 @@ public class TokenService {
     }
 
     public void revokeAll(String userId) {
+        System.out.println("User id is "+ userId);
         tokenStore.revokeAllUserTokens(userId);
     }
 
@@ -55,6 +59,8 @@ public class TokenService {
         if (!jwtService.isTokenValid(token)) return false;
         String userId = jwtService.extractUserId(token);
         String jti    = jwtService.extractJti(token);
-        return !tokenStore.isAccessTokenRevoked(userId, jti);
+        long issuedAt = jwtService.extractIssuedAt(token).getTime();
+        return !tokenStore.isAccessTokenRevoked(userId, jti)
+                && !tokenStore.isRevokedForUser(userId, issuedAt);
     }
 }

@@ -21,9 +21,9 @@ public class CreatedAudit {
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
+    protected OffsetDateTime createdAt;
 
     @CreatedBy
     @Column(updatable = false, length = 26)
-    private String createdBy;
+    protected String createdBy;
 }

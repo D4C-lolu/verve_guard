@@ -23,17 +23,17 @@ public class MutableAudit {
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
+    protected OffsetDateTime createdAt;
 
     @LastModifiedDate
     @Column(nullable = false)
-    private OffsetDateTime updatedAt;
+    protected OffsetDateTime updatedAt;
 
     @CreatedBy
     @Column(updatable = false, length = 26)
-    private String createdBy;
+    protected String createdBy;
 
     @LastModifiedBy
     @Column(length = 26)
-    private String updatedBy;
+    protected String updatedBy;
 }

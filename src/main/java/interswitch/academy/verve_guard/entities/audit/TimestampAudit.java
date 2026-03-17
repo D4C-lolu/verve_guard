@@ -22,14 +22,14 @@ public class TimestampAudit {
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
+    protected OffsetDateTime createdAt;
 
     @LastModifiedDate
     @Column(nullable = false)
-    private OffsetDateTime updatedAt;
+    protected OffsetDateTime updatedAt;
 
     @Column
-    private OffsetDateTime deletedAt;
+    protected OffsetDateTime deletedAt;
 
     public boolean isDeleted() {
         return deletedAt != null;

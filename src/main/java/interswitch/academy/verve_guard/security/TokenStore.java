@@ -10,6 +10,7 @@ public class TokenStore {
 
     private final Cache<String, String> accessTokenCache;
     private final Cache<String, String> refreshTokenCache;
+    private final Cache<String, Long> userRevocationCache;
 
     public void revokeAccessToken(String userId, String jti) {
         accessTokenCache.put("access:" + userId + ":" + jti, userId);
@@ -28,7 +29,11 @@ public class TokenStore {
     }
 
     public void revokeAllUserTokens(String userId) {
-        accessTokenCache.asMap().keySet().removeIf(key -> key.startsWith("access:" + userId + ":"));
-        refreshTokenCache.asMap().keySet().removeIf(key -> key.startsWith("refresh:" + userId + ":"));
+        userRevocationCache.put(userId, System.currentTimeMillis());
+    }
+
+    public boolean isRevokedForUser(String userId, long tokenIssuedAt) {
+        Long revokedAt = userRevocationCache.getIfPresent(userId);
+        return revokedAt != null && tokenIssuedAt < revokedAt;
     }
 }

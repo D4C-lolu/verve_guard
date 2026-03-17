@@ -21,11 +21,8 @@ import java.util.Objects;
 public class Transaction extends MutableAudit {
 
     @Id
-    @Column(nullable = false, updatable = false, length = 26)
+    @Column(nullable = false, updatable = false)
     private String id;
-
-    @Column(nullable = false, unique = true, length = 100)
-    private String reference;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
@@ -60,6 +57,10 @@ public class Transaction extends MutableAudit {
     @Column(name = "transaction_status", nullable = false, length = 50)
     private TransactionStatus transactionStatus;
 
+    public Transaction(String id) {
+        this.id = id;
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
@@ -88,7 +89,6 @@ public class Transaction extends MutableAudit {
     public String toString() {
         return "Transaction{" +
                 "id='" + id + '\'' +
-                ", reference='" + reference + '\'' +
                 ", transactionType=" + transactionType +
                 ", amount=" + amount +
                 ", currency='" + currency + '\'' +

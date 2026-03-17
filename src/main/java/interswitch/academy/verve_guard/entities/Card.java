@@ -20,7 +20,7 @@ import java.util.Objects;
 public class Card extends FullAudit {
 
     @Id
-    @Column(nullable = false, updatable = false, length = 26)
+    @Column(nullable = false, updatable = false)
     private String id;
 
     @Column(nullable = false, unique = true, length = 19)
@@ -47,6 +47,11 @@ public class Card extends FullAudit {
     @Enumerated(EnumType.STRING)
     @Column(name = "card_status", nullable = false, length = 50)
     private CardStatus cardStatus;
+
+
+    public Card(String id) {
+        this.id = id;
+    }
 
     @Override
     public final boolean equals(Object o) {

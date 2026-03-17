@@ -10,11 +10,9 @@ import org.springframework.data.repository.query.Param;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface TransactionRepository extends JpaRepository<Transaction, String> {
 
-    Optional<Transaction> findByReference(String reference);
 
     List<Transaction> findAllByAccountId(String accountId);
 

@@ -1,12 +1,10 @@
 package interswitch.academy.verve_guard.entities;
 
-import interswitch.academy.verve_guard.entities.audit.CreatedAudit;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
-
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.proxy.HibernateProxy;
@@ -21,10 +19,10 @@ import java.util.Objects;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Entity
 @Table(name = "permissions")
-public class Permission extends CreatedAudit {
+public class Permission {
 
     @Id
-    @Column(nullable = false, updatable = false, length = 26)
+    @Column(nullable = false, updatable = false)
     private String id;
 
     @Column(nullable = false, unique = true, length = 100)
@@ -32,6 +30,11 @@ public class Permission extends CreatedAudit {
 
     @Column(columnDefinition = "text")
     private String description;
+
+    public Permission(String id) {
+        this.id = id;
+    }
+
 
     @Override
     public final boolean equals(Object o) {

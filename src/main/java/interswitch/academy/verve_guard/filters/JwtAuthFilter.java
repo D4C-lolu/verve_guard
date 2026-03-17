@@ -1,5 +1,8 @@
-package interswitch.academy.verve_guard.security;
+package interswitch.academy.verve_guard.filters;
 
+import interswitch.academy.verve_guard.security.UserDetailsServiceImpl;
+import interswitch.academy.verve_guard.services.JwtService;
+import interswitch.academy.verve_guard.services.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,7 +41,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         final String token  = authHeader.substring(7);
-        final String userId = jwtService.extractUserId(token);
+        final String userId;
+        try {
+            userId = jwtService.extractUserId(token);
+        } catch (Exception e) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserById(userId);

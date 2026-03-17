@@ -18,7 +18,7 @@ import java.util.Objects;
 public class User extends FullAudit {
 
     @Id
-    @Column(nullable = false, updatable = false, length = 26)
+    @Column(nullable = false, updatable = false)
     private String id;
 
     @Column(nullable = false, length = 255)
@@ -46,6 +46,10 @@ public class User extends FullAudit {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
+
+    public User(String id) {
+        this.id = id;
+    }
 
     @Override
     public final boolean equals(Object o) {
@@ -75,7 +79,6 @@ public class User extends FullAudit {
     public String toString() {
         return "User{" +
                 "id='" + id + '\'' +
-                ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 '}';
     }

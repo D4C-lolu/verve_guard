@@ -20,7 +20,7 @@ import java.util.Objects;
 public class Account extends FullAudit {
 
     @Id
-    @Column(nullable = false, updatable = false, length = 26)
+    @Column(nullable = false, updatable = false)
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,6 +46,11 @@ public class Account extends FullAudit {
     @Enumerated(EnumType.STRING)
     @Column(name = "account_status", nullable = false, length = 50)
     private AccountStatus accountStatus;
+
+    public Account(String id) {
+        this.id = id;
+    }
+
 
     @Override
     public final boolean equals(Object o) {

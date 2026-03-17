@@ -1,8 +1,6 @@
 package interswitch.academy.verve_guard.exceptions.advice;
 
-import interswitch.academy.verve_guard.exceptions.BadRequestException;
-import interswitch.academy.verve_guard.exceptions.ConflictException;
-import interswitch.academy.verve_guard.exceptions.NotFoundException;
+import interswitch.academy.verve_guard.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +8,14 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
@@ -23,8 +27,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.time.LocalDateTime.now;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @RestControllerAdvice
@@ -44,6 +47,19 @@ public class ResponseBodyAdviceImpl  {
         final var uri = request.getRequestURI();
         log.error("An error has occurred at {} with id {}", uri, errorTraceId);
         log.error(e.getMessage(), e);
+        return ExceptionHandlerUtils.badRequest(e.getMessage(), uri, errorTraceId);
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<ApiError> handleMissingRequestHeaderException(MissingRequestHeaderException e, HttpServletRequest request) {
+        final var errorTraceId = UUID.randomUUID().toString();
+        final var uri = request.getRequestURI();
+
+        if ("Authorization".equalsIgnoreCase(e.getHeaderName())) {
+            final var apiError = new ApiError(uri, "Unauthorized", errorTraceId, UNAUTHORIZED.value(), now());
+            return new ResponseEntity<>(apiError, UNAUTHORIZED);
+        }
+
         return ExceptionHandlerUtils.badRequest(e.getMessage(), uri, errorTraceId);
     }
 
@@ -79,6 +95,53 @@ public class ResponseBodyAdviceImpl  {
         return new ResponseEntity<>(apiError, BAD_REQUEST);
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiError> handleBadCredentialsException(BadCredentialsException e, HttpServletRequest request) {
+        final var errorTraceId = UUID.randomUUID().toString();
+        final var uri = request.getRequestURI();
+        final var apiError = new ApiError(uri, "Invalid email or password", errorTraceId, UNAUTHORIZED.value(), now());
+        return new ResponseEntity<>(apiError, UNAUTHORIZED);
+    }
+
+    @ExceptionHandler({LockedException.class, DisabledException.class})
+    public ResponseEntity<ApiError> handleAccountStatusException(Exception e, HttpServletRequest request) {
+        final var errorTraceId = UUID.randomUUID().toString();
+        final var uri = request.getRequestURI();
+        final var apiError = new ApiError(uri, "Account is not accessible", errorTraceId, FORBIDDEN.value(), now());
+        return new ResponseEntity<>(apiError, FORBIDDEN);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiError> handleUnauthenticatedException(UnauthorizedException e, HttpServletRequest request) {
+        final var errorTraceId = UUID.randomUUID().toString();
+        final var uri = request.getRequestURI();
+        log.error("Unauthenticated access at {} with id {}", uri, errorTraceId);
+        final var apiError = new ApiError(uri, "Unauthorized", errorTraceId, UNAUTHORIZED.value(), now());
+        return new ResponseEntity<>(apiError, UNAUTHORIZED);
+    }
+
+    @ExceptionHandler({
+            AccessDeniedException.class,
+            AuthorizationDeniedException.class,
+            ForbiddenException.class
+    })
+    public ResponseEntity<ApiError> handleForbiddenException(ForbiddenException e, HttpServletRequest request) {
+        final var errorTraceId = UUID.randomUUID().toString();
+        final var uri = request.getRequestURI();
+        log.error("Forbidden access at {} with id {}", uri, errorTraceId);
+        final var apiError = new ApiError(uri, e.getMessage(), errorTraceId, FORBIDDEN.value(), now());
+        return new ResponseEntity<>(apiError, FORBIDDEN);
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ApiError> handleInvalidTokenException(InvalidTokenException e, HttpServletRequest request) {
+        final var errorTraceId = UUID.randomUUID().toString();
+        final var uri = request.getRequestURI();
+        log.error("Invalid token at {} with id {}", uri, errorTraceId);
+        final var apiError = new ApiError(uri, e.getMessage(), errorTraceId, UNAUTHORIZED.value(), now());
+        return new ResponseEntity<>(apiError, UNAUTHORIZED);
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiError> handleConstraintViolationException(ConstraintViolationException e, HttpServletRequest request) {
         final var errorTraceId = UUID.randomUUID().toString();
@@ -106,7 +169,7 @@ public class ResponseBodyAdviceImpl  {
         return ExceptionHandlerUtils.notFound(e.getMessage(), uri, errorTraceId);
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleException(Exception e, HttpServletRequest request) {
         final var requestURI = request.getRequestURI();
         final var errorTraceId = UUID.randomUUID().toString();

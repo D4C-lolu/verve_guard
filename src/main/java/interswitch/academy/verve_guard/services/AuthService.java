@@ -2,22 +2,18 @@ package interswitch.academy.verve_guard.services;
 
 import interswitch.academy.verve_guard.models.request.LoginRequest;
 import interswitch.academy.verve_guard.models.response.AuthResponse;
-import interswitch.academy.verve_guard.repositories.UserRepository;
-import interswitch.academy.verve_guard.security.TokenService;
 import interswitch.academy.verve_guard.security.UserDetailsServiceImpl;
 import interswitch.academy.verve_guard.security.UserPrincipal;
+import interswitch.academy.verve_guard.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
     private final UserDetailsServiceImpl userDetailsService;
@@ -30,7 +26,7 @@ public class AuthService {
                 )
         );
 
-        UserPrincipal principal = (UserPrincipal) userDetailsService.loadUserByUsername(request.getEmail());
+        UserPrincipal principal = (UserPrincipal) userDetailsService.loadUserByUsername(request.email());
         return tokenService.issueTokens(principal);
     }
 
@@ -38,12 +34,14 @@ public class AuthService {
         return tokenService.refresh(refreshToken);
     }
 
-    public void logout(String accessToken, String refreshToken) {
+    public void logout(String accessHeader, String refreshToken) {
+
+        String accessToken = SecurityUtil.extractToken(accessHeader);
         tokenService.revoke(accessToken, refreshToken);
     }
 
-    public void logoutAll(String accessToken) {
-        String userId = // extract from security context
+    public void logoutAll() {
+        String userId = SecurityUtil.getCurrentUserId();
         tokenService.revokeAll(userId);
     }
-}
+   }

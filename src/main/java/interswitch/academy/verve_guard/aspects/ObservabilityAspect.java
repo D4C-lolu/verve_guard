@@ -15,7 +15,7 @@ import java.util.UUID;
 @Slf4j
 @Aspect
 @Component
-public class PaymentObservabilityAspect {
+public class ObservabilityAspect {
 
     @Around("execution(* interswitch.academy..*(..))")
     public Object observe(ProceedingJoinPoint pjp) throws Throwable {

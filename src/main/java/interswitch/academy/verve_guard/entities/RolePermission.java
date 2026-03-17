@@ -3,7 +3,6 @@ package interswitch.academy.verve_guard.entities;
 import interswitch.academy.verve_guard.entities.audit.CreatedAudit;
 import jakarta.persistence.*;
 import lombok.*;
-
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.proxy.HibernateProxy;
@@ -32,6 +31,10 @@ public class RolePermission extends CreatedAudit {
     @MapsId("permissionId")
     @JoinColumn(name = "permission_id")
     private Permission permission;
+
+    public RolePermission(RolePermissionId id) {
+        this.id = id;
+    }
 
     @Override
     public final boolean equals(Object o) {
