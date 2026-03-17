@@ -50,3 +50,31 @@ INSERT INTO public.users (
           '01JROLES00000000000000003C',
           now(), now()
       );
+
+INSERT INTO public.users (
+    id, firstname, lastname, email, phone,
+    password_hash, user_status, role_id,
+    created_at, updated_at
+) VALUES (
+             '01JUSERS0000000000000003CC',
+             'Test', 'Merchant2',
+             'testmerchant2@verveguard.com',
+             '444114444444',
+             crypt('Admin123!', gen_salt('bf', 10)),
+             'ACTIVE',
+             '01JROLES00000000000000003C',
+             now(), now()
+         );
+
+INSERT INTO public.merchants (
+    id, user_id, address, kyc_status, merchant_status, tier,
+    created_at, updated_at
+) VALUES (
+             '01JMERCH0000000000000002BB',
+             '01JUSERS0000000000000003CC',
+             '2 Test Street, Lagos',
+             'PENDING',
+             'INACTIVE',
+             'TIER_1',
+             now(), now()
+         );

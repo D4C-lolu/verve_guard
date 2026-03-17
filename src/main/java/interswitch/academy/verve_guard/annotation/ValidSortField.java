@@ -1,6 +1,6 @@
 package interswitch.academy.verve_guard.annotation;
 
-import interswitch.academy.verve_guard.validator.ValidSortFieldValidator;
+import interswitch.academy.verve_guard.validators.ValidSortFieldValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

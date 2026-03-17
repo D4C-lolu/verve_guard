@@ -123,3 +123,68 @@ INSERT INTO public.tier_config (
           10, 5,
           now(), now()
       );
+
+
+-- test merchant user
+INSERT INTO public.users (
+    id, firstname, lastname, email, phone,
+    password_hash, user_status, role_id,
+    created_at, updated_at
+) VALUES (
+             '01JUSERS0000000000000002BB',
+             'Demo', 'Merchant',
+             'demo.merchant@verveguard.com',
+             '11111111112',
+             crypt('Admin123!', gen_salt('bf', 10)),
+             'ACTIVE',
+             '01JROLES00000000000000003C',
+             now(), now()
+         );
+
+-- demo merchant
+INSERT INTO public.merchants (
+    id, user_id, address, kyc_status, merchant_status, tier,
+    created_at, updated_at
+) VALUES (
+             '01JMERCH0000000000000001AA',
+             '01JUSERS0000000000000002BB',
+             '1 Demo Street, Lagos',
+             'APPROVED',
+             'ACTIVE',
+             'TIER_2',
+             now(), now()
+         );
+
+-- demo account with funds
+INSERT INTO public.accounts (
+    id, merchant_id, account_number, account_type,
+    currency, balance, ledger_balance, account_status,
+    created_at, updated_at
+) VALUES (
+             '01JACCTS0000000000000001AA',
+             '01JMERCH0000000000000001AA',
+             '0000000000',
+             'SETTLEMENT',
+             'NGN',
+             500000000.0000,
+             500000000.0000,
+             'ACTIVE',
+             now(), now()
+         );
+
+-- demo card linked to account
+INSERT INTO public.cards (
+    id, card_number, card_hash, account_id, card_type, scheme,
+    expiry_month, expiry_year, card_status,
+    created_at, updated_at
+) VALUES (
+             '01JCARDS0000000000000001AA',
+             '4011********1111',
+             encode(digest('4011111111111111', 'sha256'), 'hex'),
+             '01JACCTS0000000000000001AA',
+             'VIRTUAL',
+             'VISA',
+             12, 2028,
+             'ACTIVE',
+             now(), now()
+         );

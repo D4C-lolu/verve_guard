@@ -29,8 +29,6 @@ public class MerchantControllerIntegrationTest extends BaseControllerIntegration
     @Autowired
     private UserRepository userRepository;
 
-    private String superAdminToken;
-    private String merchantToken;
     private User merchantUser;
 
     @BeforeEach

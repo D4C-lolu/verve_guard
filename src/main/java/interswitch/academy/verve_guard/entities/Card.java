@@ -48,7 +48,6 @@ public class Card extends FullAudit {
     @Column(name = "card_status", nullable = false, length = 50)
     private CardStatus cardStatus;
 
-
     public Card(String id) {
         this.id = id;
     }

@@ -22,6 +22,10 @@ public abstract class BaseControllerIntegrationTest extends BaseIntegrationTest 
     @Autowired
     protected ObjectMapper objectMapper;
 
+    protected String superAdminToken;
+
+    protected String merchantToken;
+
     protected AuthResponse login(String email, String password) throws Exception {
         MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

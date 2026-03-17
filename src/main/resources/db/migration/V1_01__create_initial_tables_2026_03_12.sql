@@ -109,6 +109,7 @@ CREATE TABLE IF NOT EXISTS public.cards (
     scheme                                  character varying (50) NOT NULL,  -- VISA, MASTERCARD, VERVE
     expiry_month                            smallint NOT NULL,
     expiry_year                             smallint NOT NULL,
+    card_hash                               character varying (64) NOT NULL,
     card_status                             character varying (50) NOT NULL,  -- ACTIVE, BLOCKED, EXPIRED
     created_at                              timestamp with time zone NOT NULL DEFAULT now(),
     updated_at                              timestamp with time zone NOT NULL,
@@ -117,7 +118,7 @@ CREATE TABLE IF NOT EXISTS public.cards (
     updated_by                              character varying (26),
     deleted_by                              character varying (26),
     CONSTRAINT cards_pkey PRIMARY KEY (id),
-    CONSTRAINT cards_number_unique UNIQUE (card_number),
+    CONSTRAINT cards_hash_unique UNIQUE (card_hash),
     CONSTRAINT cards_account_fkey FOREIGN KEY (account_id) REFERENCES public.accounts(id) ON DELETE RESTRICT,
     CONSTRAINT cards_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL,
     CONSTRAINT cards_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES public.users(id) ON DELETE SET NULL,
@@ -214,3 +215,8 @@ ALTER TABLE public.transactions
 
 CREATE INDEX IF NOT EXISTS idx_transactions_transfer_id
     on public.transactions (transfer_id);
+
+CREATE SEQUENCE IF NOT EXISTS account_number_seq
+    START WITH 1000000000
+    INCREMENT BY 1
+    NO CYCLE;
