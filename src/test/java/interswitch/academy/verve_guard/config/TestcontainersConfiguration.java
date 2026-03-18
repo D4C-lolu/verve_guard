@@ -3,6 +3,7 @@ package interswitch.academy.verve_guard.config;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -16,5 +17,11 @@ public class TestcontainersConfiguration {
         return new PostgreSQLContainer(DockerImageName.parse("postgres:16-alpine"))
                 .waitingFor(Wait.forListeningPort())
                 .withReuse(false);
+    }
+
+
+    @Bean
+    RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }

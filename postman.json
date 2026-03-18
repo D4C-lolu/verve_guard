@@ -1,0 +1,1059 @@
+{
+  "info": {
+    "name": "VerveGuard API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080/api/v1" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "userId", "value": "" },
+    { "key": "roleId", "value": "" },
+    { "key": "permissionId", "value": "" },
+    { "key": "merchantId", "value": "01JMERCH0000000000000001AA" },
+    { "key": "accountId", "value": "01JACCTS0000000000000001AA" },
+    { "key": "cardId", "value": "01JCARDS0000000000000001AA" },
+    { "key": "transferId", "value": "" },
+    { "key": "superAdminEmail", "value": "superadmin@verveguard.com" },
+    { "key": "superAdminPassword", "value": "Admin123!" },
+    { "key": "demoMerchantEmail", "value": "demo.merchant@verveguard.com" },
+    { "key": "demoMerchantPassword", "value": "Admin123!" },
+    { "key": "transferReference", "value": "" },
+    { "key": "actuatorUrl", "value": "http://localhost:8080/actuator" },
+    { "key": "stressFromAccountId", "value": "01JACCTS0000000000000001AA" },
+    { "key": "stressToAccountId", "value": "01JACCTS0000000000000002BB" },
+    { "key": "stressCardNumber", "value": "4111111111111111" },
+    { "key": "stressConcurrentRequests", "value": "200" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('accessToken', json.data.accessToken);",
+                  "pm.collectionVariables.set('refreshToken', json.data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{superAdminEmail}}\",\n  \"password\": \"{{superAdminPassword}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('accessToken', json.data.accessToken);",
+                  "pm.collectionVariables.set('refreshToken', json.data.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Refresh-Token", "value": "{{refreshToken}}" }],
+            "url": "{{baseUrl}}/auth/refresh"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Refresh-Token", "value": "{{refreshToken}}" }
+            ],
+            "url": "{{baseUrl}}/auth/logout"
+          }
+        },
+        {
+          "name": "Logout All",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/auth/logout-all"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Create User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data) pm.collectionVariables.set('userId', json.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/users",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"othername\": null,\n  \"email\": \"john.doe@verveguard.com\",\n  \"phone\": \"08011111111\",\n  \"password\": \"Admin123!\",\n  \"roleId\": \"{{roleId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/users?page=1&size=10&sortField=createdAt&sortDirection=DESC",
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "size", "value": "10" },
+                { "key": "sortField", "value": "createdAt" },
+                { "key": "sortDirection", "value": "DESC" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/users/{{userId}}"
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/users/{{userId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstname\": \"Jane\",\n  \"lastname\": \"Doe\",\n  \"othername\": null,\n  \"email\": null,\n  \"phone\": null\n}"
+            }
+          }
+        },
+        {
+          "name": "Change User Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}/status?status=SUSPENDED",
+              "query": [{ "key": "status", "value": "SUSPENDED" }]
+            }
+          }
+        },
+        {
+          "name": "Change User Role",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}/role?roleId={{roleId}}",
+              "query": [{ "key": "roleId", "value": "{{roleId}}" }]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/users/{{userId}}/password",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"Admin123!\",\n  \"newPassword\": \"NewPassword123!\",\n  \"confirmPassword\": \"NewPassword123!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/users/{{userId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Roles",
+      "item": [
+        {
+          "name": "Create Role",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data) pm.collectionVariables.set('roleId', json.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/roles",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"SUPPORT\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Roles",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/roles?page=1&size=10&sortField=name&sortDirection=ASC",
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "size", "value": "10" },
+                { "key": "sortField", "value": "name" },
+                { "key": "sortDirection", "value": "ASC" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Role By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/roles/{{roleId}}"
+          }
+        },
+        {
+          "name": "Assign Permissions",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/roles/{{roleId}}/permissions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissionIds\": [\"{{permissionId}}\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Revoke Permissions",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/roles/{{roleId}}/permissions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissionIds\": [\"{{permissionId}}\"]\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Permissions",
+      "item": [
+        {
+          "name": "Create Permission",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data) pm.collectionVariables.set('permissionId', json.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/permissions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"report:read\",\n  \"description\": \"View reports\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Permissions",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/permissions"
+          }
+        },
+        {
+          "name": "Get Permission By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/permissions/{{permissionId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Merchants",
+      "item": [
+        {
+          "name": "Create Merchant (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data) pm.collectionVariables.set('merchantId', json.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/merchants",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"address\": \"123 Merchant Street, Lagos\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register New User as Merchant",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/merchants/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstname\": \"New\",\n  \"lastname\": \"Merchant\",\n  \"othername\": null,\n  \"email\": \"new.merchant@verveguard.com\",\n  \"phone\": \"08099999999\",\n  \"password\": \"Admin123!\",\n  \"address\": \"456 New Street, Lagos\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Self Register as Merchant",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/merchants/self-register?address=789 Self Street Lagos",
+              "query": [{ "key": "address", "value": "789 Self Street Lagos" }]
+            }
+          }
+        },
+        {
+          "name": "Get All Merchants",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/merchants?page=1&size=10&sortField=createdAt&sortDirection=DESC",
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "size", "value": "10" },
+                { "key": "sortField", "value": "createdAt" },
+                { "key": "sortDirection", "value": "DESC" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Merchants By Status",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/merchants/status?status=ACTIVE&page=1&size=10&sortField=createdAt&sortDirection=DESC",
+              "query": [
+                { "key": "status", "value": "ACTIVE" },
+                { "key": "page", "value": "1" },
+                { "key": "size", "value": "10" },
+                { "key": "sortField", "value": "createdAt" },
+                { "key": "sortDirection", "value": "DESC" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Merchants By KYC Status",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/merchants/kyc-status?kycStatus=PENDING&page=1&size=10&sortField=createdAt&sortDirection=DESC",
+              "query": [
+                { "key": "kycStatus", "value": "PENDING" },
+                { "key": "page", "value": "1" },
+                { "key": "size", "value": "10" },
+                { "key": "sortField", "value": "createdAt" },
+                { "key": "sortDirection", "value": "DESC" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Merchant By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/merchants/{{merchantId}}"
+          }
+        },
+        {
+          "name": "Update Merchant",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/merchants/{{merchantId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address\": \"999 Updated Street, Lagos\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Merchant Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/merchants/{{merchantId}}/status?status=SUSPENDED",
+              "query": [{ "key": "status", "value": "SUSPENDED" }]
+            }
+          }
+        },
+        {
+          "name": "Update KYC Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/merchants/{{merchantId}}/kyc?kycStatus=APPROVED",
+              "query": [{ "key": "kycStatus", "value": "APPROVED" }]
+            }
+          }
+        },
+        {
+          "name": "Upgrade Tier",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/merchants/{{merchantId}}/tier/upgrade"
+          }
+        },
+        {
+          "name": "Downgrade Tier",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/merchants/{{merchantId}}/tier/downgrade"
+          }
+        },
+        {
+          "name": "Delete Merchant",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/merchants/{{merchantId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tier Config",
+      "item": [
+        {
+          "name": "Get All Tier Configs",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/tier-configs"
+          }
+        },
+        {
+          "name": "Get Tier Config By Tier",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/tier-configs/TIER_1"
+          }
+        },
+        {
+          "name": "Update Tier Config",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/tier-configs/TIER_1",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dailyTransactionLimit\": 200000.0000,\n  \"singleTransactionLimit\": 20000.0000,\n  \"monthlyTransactionLimit\": 2000000.0000,\n  \"maxCards\": 3,\n  \"maxAccounts\": 2\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Accounts",
+      "item": [
+        {
+          "name": "Create Account (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data) pm.collectionVariables.set('accountId', json.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/accounts",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"merchantId\": \"{{merchantId}}\",\n  \"accountType\": \"SETTLEMENT\",\n  \"currency\": \"NGN\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Account (Merchant Self)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/accounts/me",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountType\": \"WALLET\",\n  \"currency\": \"NGN\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Account By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/accounts/{{accountId}}"
+          }
+        },
+        {
+          "name": "Get Accounts By Merchant",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/accounts/merchant/{{merchantId}}?page=1&size=10&sortField=created_at&sortDirection=DESC",
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "size", "value": "10" },
+                { "key": "sortField", "value": "created_at" },
+                { "key": "sortDirection", "value": "DESC" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Account Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/accounts/{{accountId}}/status?status=SUSPENDED",
+              "query": [{ "key": "status", "value": "SUSPENDED" }]
+            }
+          }
+        },
+        {
+          "name": "Delete Account",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/accounts/{{accountId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cards",
+      "item": [
+        {
+          "name": "Create Card (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data) pm.collectionVariables.set('cardId', json.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/cards",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountId\": \"{{accountId}}\",\n  \"cardNumber\": \"4111111111111111\",\n  \"cardType\": \"VIRTUAL\",\n  \"scheme\": \"VISA\",\n  \"expiryMonth\": 12,\n  \"expiryYear\": 2028\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Card (Merchant Self)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/cards/me",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountId\": \"{{accountId}}\",\n  \"cardNumber\": \"4222222222222222\",\n  \"cardType\": \"VIRTUAL\",\n  \"scheme\": \"VISA\",\n  \"expiryMonth\": 12,\n  \"expiryYear\": 2028\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Card By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/cards/{{cardId}}"
+          }
+        },
+        {
+          "name": "Get Cards By Account",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/cards/account/{{accountId}}?page=1&size=10&sortField=created_at&sortDirection=DESC",
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "size", "value": "10" },
+                { "key": "sortField", "value": "created_at" },
+                { "key": "sortDirection", "value": "DESC" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Card Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/cards/{{cardId}}/status?status=BLOCKED",
+              "query": [{ "key": "status", "value": "BLOCKED" }]
+            }
+          }
+        },
+        {
+          "name": "Block Card (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/cards/{{cardId}}/block"
+          }
+        },
+        {
+          "name": "Block Card (Merchant Self)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/cards/{{cardId}}/block/me"
+          }
+        },
+        {
+          "name": "Delete Card",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/cards/{{cardId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transfers",
+      "item": [
+        {
+          "name": "Transfer (Admin)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('transferReference', 'REF-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data) pm.collectionVariables.set('transferId', json.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/transfers",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reference\": \"{{transferReference}}\",\n  \"fromAccountId\": \"01JACCTS0000000000000001AA\",\n  \"toAccountId\": \"01JACCTS0000000000000002BB\",\n  \"amount\": 5001.00,\n  \"currency\": \"NGN\",\n  \"description\": \"Test transfer\",\n  \"cardNumber\": \"4111111111111111\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Transfer (Merchant Self)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('transferReference', 'REF-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase());"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/transfers/me",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reference\": \"{{transferReference}}\",\n  \"fromAccountId\": \"01JACCTS0000000000000001AA\",\n  \"toAccountId\": \"01JACCTS0000000000000002BB\",\n  \"amount\": 5001.00,\n  \"currency\": \"NGN\",\n  \"description\": \"Merchant self transfer\",\n  \"cardNumber\": \"4111111111111111\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Transfer By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/transfers/{{transferId}}"
+          }
+        },
+        {
+          "name": "Get Transfers By Account",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/transfers/account/{{accountId}}?page=1&size=10",
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fraud Detection",
+      "item": [
+        {
+          "name": "Evaluate Transaction",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/fraud/evaluate",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cardNumber\": \"4111111111111111\",\n  \"merchantId\": \"{{merchantId}}\",\n  \"amount\": 5001.00,\n  \"currency\": \"NGN\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Fraud Attempts",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/fraud/attempts?page=1&size=10",
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stress Tests",
+      "description": "200 concurrent request stress tests. Run via Postman Runner with iterations=1. Each request uses a unique reference generated via pre-request script.",
+      "item": [
+        {
+          "name": "Setup - Login & Store Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('accessToken', json.data.accessToken);",
+                  "pm.collectionVariables.set('refreshToken', json.data.refreshToken);",
+                  "pm.test('Login successful for stress test', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{superAdminEmail}}\",\n  \"password\": \"{{superAdminPassword}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Stress - Single Transfer Request",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const ref = 'STRESS-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase();",
+                  "pm.collectionVariables.set('transferReference', ref);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const responseTime = pm.response.responseTime;",
+                  "pm.test('Response received', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([201, 400, 409]);",
+                  "});",
+                  "pm.test('Response time under 2000ms', () => {",
+                  "  pm.expect(responseTime).to.be.below(2000);",
+                  "});",
+                  "const results = pm.collectionVariables.get('stressResults') ? JSON.parse(pm.collectionVariables.get('stressResults')) : { total: 0, success: 0, failed: 0, times: [] };",
+                  "results.total++;",
+                  "results.times.push(responseTime);",
+                  "if (pm.response.code === 201) results.success++;",
+                  "else results.failed++;",
+                  "pm.collectionVariables.set('stressResults', JSON.stringify(results));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/transfers",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reference\": \"{{transferReference}}\",\n  \"fromAccountId\": \"{{stressFromAccountId}}\",\n  \"toAccountId\": \"{{stressToAccountId}}\",\n  \"amount\": 1.00,\n  \"currency\": \"NGN\",\n  \"description\": \"Stress test transfer\",\n  \"cardNumber\": \"{{stressCardNumber}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Stress - Fraud Evaluate Request",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const cards = ['4111111111111111','4222222222222222','4333333333333333','4444444444444444','4555555555555555'];",
+                  "const card = cards[Math.floor(Math.random() * cards.length)];",
+                  "pm.collectionVariables.set('stressCardNumber', card);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const responseTime = pm.response.responseTime;",
+                  "pm.test('Fraud evaluate responded', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Fraud response under 100ms overhead', () => {",
+                  "  pm.expect(responseTime).to.be.below(100);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "console.log('Fraud status:', json.data, '| Response time:', responseTime + 'ms');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/fraud/evaluate",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cardNumber\": \"{{stressCardNumber}}\",\n  \"merchantId\": \"{{merchantId}}\",\n  \"amount\": 5001.00,\n  \"currency\": \"NGN\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Stress - Results Summary",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const results = pm.collectionVariables.get('stressResults') ? JSON.parse(pm.collectionVariables.get('stressResults')) : { total: 0, success: 0, failed: 0, times: [] };",
+                  "const times = results.times.sort((a, b) => a - b);",
+                  "const avg = times.length ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 0;",
+                  "const p95 = times.length ? times[Math.floor(times.length * 0.95)] : 0;",
+                  "const p99 = times.length ? times[Math.floor(times.length * 0.99)] : 0;",
+                  "console.log('=== Stress Test Results ===');",
+                  "console.log('Total requests:    ' + results.total);",
+                  "console.log('Successful:        ' + results.success);",
+                  "console.log('Failed:            ' + results.failed);",
+                  "console.log('Avg response time: ' + avg + 'ms');",
+                  "console.log('P95 response time: ' + p95 + 'ms');",
+                  "console.log('P99 response time: ' + p99 + 'ms');",
+                  "console.log('===========================');",
+                  "pm.test('Average response time within SLA', () => {",
+                  "  pm.expect(avg).to.be.below(2000);",
+                  "});",
+                  "pm.collectionVariables.set('stressResults', JSON.stringify({ total: 0, success: 0, failed: 0, times: [] }));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{actuatorUrl}}/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Actuator",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "url": "{{actuatorUrl}}/health"
+          }
+        },
+        {
+          "name": "Metrics",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{actuatorUrl}}/metrics"
+          }
+        },
+        {
+          "name": "Info",
+          "request": {
+            "method": "GET",
+            "url": "{{actuatorUrl}}/info"
+          }
+        },
+        {
+          "name": "Blacklist Health Indicator",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{actuatorUrl}}/health/blacklistHealthIndicator"
+          }
+        }
+      ]
+    }
+  ]
+}

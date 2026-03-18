@@ -78,3 +78,29 @@ INSERT INTO public.merchants (
              'TIER_1',
              now(), now()
          );
+
+
+INSERT INTO public.merchant_blacklist (
+    id, merchant_id, reason, blacklisted_at
+) VALUES (
+             '01JBLKLIST000000000000001A',
+             '01JMERCH0000000000000002BB',
+             'Fraudulent activity detected',
+             now()
+         );
+
+INSERT INTO public.accounts (
+    id, merchant_id, account_number, account_type,
+    currency, balance, ledger_balance, account_status,
+    created_at, updated_at
+) VALUES (
+    '01JACCTS0000000000000002BB',
+    '01JMERCH0000000000000001AA',
+    '1000000002',
+    'SETTLEMENT',
+    'NGN',
+    0.0000,
+    0.0000,
+    'ACTIVE',
+    now(), now()
+    );

@@ -220,3 +220,53 @@ CREATE SEQUENCE IF NOT EXISTS account_number_seq
     START WITH 1000000000
     INCREMENT BY 1
     NO CYCLE;
+
+
+CREATE TABLE IF NOT EXISTS public.fraud_attempts (
+    id                                      character varying (26) NOT NULL,
+    card_hash                               character varying (64) NOT NULL,
+    merchant_id                             character varying (26) NOT NULL,
+    ip_address                              character varying (45) NOT NULL,
+    amount                                  numeric (19, 4) NOT NULL,
+    currency                                character varying (3) NOT NULL,
+    status                                  character varying (50) NOT NULL,
+    flags                                   text[],
+    created_at                              timestamp with time zone NOT NULL DEFAULT now(),
+    CONSTRAINT fraud_attempts_pkey PRIMARY KEY (id)
+    );
+
+CREATE INDEX IF NOT EXISTS idx_fraud_attempts_card_hash
+    ON public.fraud_attempts (card_hash);
+
+CREATE INDEX IF NOT EXISTS idx_fraud_attempts_merchant_id
+    ON public.fraud_attempts (merchant_id);
+
+CREATE INDEX IF NOT EXISTS idx_fraud_attempts_ip_address
+    ON public.fraud_attempts (ip_address);
+
+CREATE INDEX IF NOT EXISTS idx_fraud_attempts_created_at
+    ON public.fraud_attempts (created_at);
+
+CREATE INDEX IF NOT EXISTS idx_fraud_attempts_status
+    ON public.fraud_attempts (status);
+
+
+CREATE TABLE IF NOT EXISTS public.merchant_blacklist (
+                                                         id                                      character varying (26) NOT NULL,
+    merchant_id                             character varying (26) NOT NULL,
+    reason                                  text NOT NULL,
+    blacklisted_at                          timestamp with time zone NOT NULL DEFAULT now(),
+    blacklisted_by                          character varying (26),
+    lifted_at                               timestamp with time zone,
+                                                          lifted_by                               character varying (26),
+    CONSTRAINT merchant_blacklist_pkey PRIMARY KEY (id),
+    CONSTRAINT merchant_blacklist_merchant_fkey FOREIGN KEY (merchant_id) REFERENCES public.merchants (id) ON DELETE RESTRICT,
+    CONSTRAINT merchant_blacklist_by_fkey FOREIGN KEY (blacklisted_by) REFERENCES public.users (id) ON DELETE SET NULL,
+    CONSTRAINT merchant_blacklist_lifted_by_fkey FOREIGN KEY (lifted_by) REFERENCES public.users (id) ON DELETE SET NULL
+    );
+
+CREATE INDEX IF NOT EXISTS idx_merchant_blacklist_merchant_id
+    ON public.merchant_blacklist (merchant_id);
+
+CREATE INDEX IF NOT EXISTS idx_merchant_blacklist_lifted_at
+    ON public.merchant_blacklist (lifted_at);
