@@ -23,6 +23,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
+
 @DisplayName("Account Service Integration Tests")
 public class AccountServiceIntegrationTest extends BaseIntegrationTest {
 

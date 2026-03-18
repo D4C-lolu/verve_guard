@@ -1,5 +1,6 @@
 package interswitch.academy.verve_guard.configuration;
 
+import interswitch.academy.verve_guard.constants.Permissions;
 import interswitch.academy.verve_guard.filters.JwtAuthFilter;
 import interswitch.academy.verve_guard.security.AccessDeniedHandlerImpl;
 import interswitch.academy.verve_guard.security.AuthEntryPoint;
@@ -48,8 +49,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/*/auth/**").permitAll()
                         .requestMatchers("/api/*/merchants/register").permitAll()
-                        .requestMatchers("/actuator/health").permitAll()
-                        .requestMatchers("/actuator/**").hasAuthority("system:monitor")
+                        .requestMatchers("/actuator/prometheus", "/actuator/health").permitAll()
+                        .requestMatchers("/actuator/**").hasAuthority(Permissions.SYSTEM_MONITOR)
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

@@ -55,7 +55,10 @@ INSERT INTO public.permissions (id, name, description) VALUES
     ('01JPERMS000000000000000U44', 'role:update',         'Update roles'),
     ('01JPERMS000000000000000V55', 'role:delete',         'Delete roles'),
     ('01JPERMS000000000000000W66', 'permission:read',     'View permissions'),
-    ('01JPERMS000000000000000X77', 'permission:assign',   'Assign permissions to roles');
+    ('01JPERMS000000000000000X77', 'permission:assign',   'Assign permissions to roles'),
+
+    -- Actuator endpoints
+    ('01JPERMS000000000000000Y88', 'system:monitor', 'Access actuator endpoints');
 
 -- SUPER_ADMIN gets everything
 INSERT INTO public.role_permissions (role_id, permission_id)

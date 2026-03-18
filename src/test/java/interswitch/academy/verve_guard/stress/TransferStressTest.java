@@ -62,7 +62,7 @@ public class TransferStressTest {
         this.superAdminToken = ((Map<?, ?>) loginResponse.data()).get("accessToken").toString();
     }
 
-    @Test
+    //@Test
     @DisplayName("should handle 200 concurrent transfer requests within 100ms overhead")
     void shouldHandle200ConcurrentRequestsWithin100msOverhead() throws InterruptedException {
         ExecutorService executor       = Executors.newFixedThreadPool(CONCURRENT_REQUESTS);

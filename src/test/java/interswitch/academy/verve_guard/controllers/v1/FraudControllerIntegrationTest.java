@@ -42,6 +42,7 @@ public class FraudControllerIntegrationTest extends BaseControllerIntegrationTes
 
         mockMvc.perform(post("/api/v1/fraud/evaluate")
                         .header("Authorization", bearerToken(superAdminToken))
+                        .with(r -> { r.setRemoteAddr(uniqueIp()); return r; })
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -60,6 +61,7 @@ public class FraudControllerIntegrationTest extends BaseControllerIntegrationTes
 
         mockMvc.perform(post("/api/v1/fraud/evaluate")
                         .header("Authorization", bearerToken(superAdminToken))
+                        .with(r -> { r.setRemoteAddr(uniqueIp()); return r; })
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())

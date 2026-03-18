@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
@@ -46,6 +47,7 @@ public class TransferControllerIntegrationTest extends BaseControllerIntegration
 
         mockMvc.perform(post("/api/v1/transfers")
                         .header("Authorization", bearerToken(superAdminToken))
+                        .with(r -> { r.setRemoteAddr(uniqueIp()); return r; })
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -58,6 +60,7 @@ public class TransferControllerIntegrationTest extends BaseControllerIntegration
     void shouldReturn403WhenMerchantTriesToTransferViaAdminEndpoint() throws Exception {
         mockMvc.perform(post("/api/v1/transfers")
                         .header("Authorization", bearerToken(merchantToken))
+                        .with(r -> { r.setRemoteAddr(uniqueIp()); return r; })
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildRequest("REF-CTRL-002"))))
                 .andExpect(status().isForbidden());
@@ -68,6 +71,7 @@ public class TransferControllerIntegrationTest extends BaseControllerIntegration
     void shouldTransferForSelfSuccessfully() throws Exception {
         mockMvc.perform(post("/api/v1/transfers/me")
                         .header("Authorization", bearerToken(merchantToken))
+                        .with(r -> { r.setRemoteAddr(uniqueIp()); return r; })
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildRequest("REF-CTRL-003"))))
                 .andExpect(status().isCreated())
@@ -80,11 +84,13 @@ public class TransferControllerIntegrationTest extends BaseControllerIntegration
         TransferRequest request = buildRequest("REF-CTRL-004");
         mockMvc.perform(post("/api/v1/transfers")
                 .header("Authorization", bearerToken(superAdminToken))
+                .with(r -> { r.setRemoteAddr(uniqueIp()); return r; })
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
 
         mockMvc.perform(post("/api/v1/transfers")
                         .header("Authorization", bearerToken(superAdminToken))
+                        .with(r -> { r.setRemoteAddr(uniqueIp()); return r; })
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict());
@@ -103,6 +109,7 @@ public class TransferControllerIntegrationTest extends BaseControllerIntegration
 
         mockMvc.perform(post("/api/v1/transfers")
                         .header("Authorization", bearerToken(superAdminToken))
+                        .with(r -> { r.setRemoteAddr(uniqueIp()); return r; })
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
@@ -113,6 +120,7 @@ public class TransferControllerIntegrationTest extends BaseControllerIntegration
     void shouldGetTransferByIdSuccessfully() throws Exception {
         MvcResult result = mockMvc.perform(post("/api/v1/transfers")
                         .header("Authorization", bearerToken(superAdminToken))
+                        .with(r -> { r.setRemoteAddr(uniqueIp()); return r; })
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildRequest("REF-CTRL-006"))))
                 .andReturn();
@@ -139,6 +147,7 @@ public class TransferControllerIntegrationTest extends BaseControllerIntegration
     void shouldGetTransfersByAccountSuccessfully() throws Exception {
         mockMvc.perform(post("/api/v1/transfers")
                 .header("Authorization", bearerToken(superAdminToken))
+                .with(r -> { r.setRemoteAddr(uniqueIp()); return r; })
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(buildRequest("REF-CTRL-007"))));
 
@@ -153,6 +162,7 @@ public class TransferControllerIntegrationTest extends BaseControllerIntegration
     @DisplayName("should return 401 when unauthenticated")
     void shouldReturn401WhenUnauthenticated() throws Exception {
         mockMvc.perform(post("/api/v1/transfers")
+                        .with(r -> { r.setRemoteAddr(uniqueIp()); return r; })
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(buildRequest("REF-CTRL-008"))))
                 .andExpect(status().isUnauthorized());

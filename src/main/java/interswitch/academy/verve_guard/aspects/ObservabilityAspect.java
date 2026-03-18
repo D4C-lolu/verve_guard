@@ -17,7 +17,11 @@ import java.util.UUID;
 @Component
 public class ObservabilityAspect {
 
-    @Around("execution(* interswitch.academy..*(..))")
+    @Around("execution(* interswitch.academy.verve_guard.*.*(..)) || " +
+            "execution(* interswitch.academy.verve_guard.repositories..*(..)) || " +
+            "execution(* interswitch.academy.verve_guard.controllers..*(..)) || " +
+            "execution(* interswitch.academy.verve_guard.services..*(..)) || " +
+            "execution(* interswitch.academy.verve_guard.components..*(..))")
     public Object observe(ProceedingJoinPoint pjp) throws Throwable {
 
         String method = pjp.getSignature().getName();

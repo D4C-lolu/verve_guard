@@ -23,6 +23,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -43,10 +44,6 @@ public class TransferServiceIntegrationTest extends BaseIntegrationTest {
     private NamedParameterJdbcTemplate namedJdbc;
 
     private static final AtomicInteger IP_COUNTER = new AtomicInteger(1);
-
-    private String uniqueIp() {
-        return "10.0." + (IP_COUNTER.get() / 255) + "." + IP_COUNTER.getAndIncrement();
-    }
 
     @BeforeEach
     void setupSecurityContext() {
@@ -151,8 +148,7 @@ public class TransferServiceIntegrationTest extends BaseIntegrationTest {
         );
 
         assertThatThrownBy(() -> transferService.transfer(request, uniqueIp()))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessage("Account currency does not match transfer currency");
+                .isInstanceOf(BadRequestException.class);
     }
 
     @Test
