@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -159,7 +160,8 @@ public class ResponseBodyAdviceImpl  {
 
     @ExceptionHandler({
             NoSuchElementException.class,
-            NotFoundException.class
+            NotFoundException.class,
+            NoResourceFoundException.class,
     })
     public ResponseEntity<ApiError> handleNotFoundException(Exception e, HttpServletRequest request) {
         final var errorTraceId = UUID.randomUUID().toString();
